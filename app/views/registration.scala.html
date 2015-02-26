@@ -1,0 +1,42 @@
+@* registration Template File *@
+@import helper._
+@import models._
+@(knolxForm: Form[KnolxUser])
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f)}
+@main("Registration","login"){
+ <div class="container-fluid">
+      <div class="row">
+                <div class="col-md-6" >
+                      <div class="panel panel-default" style="width:85%;height:100%; background-color:#999966;">
+                           <div class="panel-heading">
+                            <h3 class="panel-title">Registration Form</h3>
+                            </div>
+                            <div class="panel-body" >
+                               @form(routes.Application.save()) {	
+					          <fieldset>@formElements(knolxForm)</fieldset>
+                                  
+                                   <div class="actions">
+						                         <input type="submit" value="Add new KnolxUser" class="btn btn-primary"> or 
+						                         <a href="@routes.Application.index" class="btn btn-default">Cancel</a>
+					                </div>
+					           }
+                              </div>
+                         </div>
+                    </div>
+         <div class="col-md-6" style="width :40%; background-color:#999966;">
+                   <div class="jumbotron" style="margin-top:5%;">
+                            <h4>Hello, world!</h4>
+                            <p>This paragraph
+                               contains a lot of lines
+                               in the source code,
+                               but the browser 
+                               ignores it.
+                             </p>
+  
+
+                    </div>
+         </div>
+    </div>
+ </div>
+}

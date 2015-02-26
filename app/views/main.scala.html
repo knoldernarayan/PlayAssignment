@@ -1,0 +1,17 @@
+@* main Template File *@
+@(pageTitle:String,loginStatus:String,id:Int=0)(contents:Html)
+<!DOCTYPE html>
+<html >
+    <head>
+        @title(pageTitle)
+        @styleSheet("home")
+        @scripts("home")
+    </head>
+    <body >
+               @navbar(loginStatus,id)
+               @contents
+               @footer("This paragraph contains a lot of lines in the source code,but the browser ignores it.") 
+     </body>
+</html>
+
+

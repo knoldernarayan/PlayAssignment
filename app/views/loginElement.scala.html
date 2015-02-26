@@ -1,0 +1,9 @@
+@* loginElement Template File *@
+@import helper._
+@import models._
+@(loginForm: Form[Login])
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@inputText(loginForm("email"), '_label -> "Email", 'class -> "form-control")
+@inputPassword(loginForm("password"), '_label -> "Password", 'class -> "form-control")
