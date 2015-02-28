@@ -13,7 +13,7 @@
                             <h3 class="panel-title">Registration Form</h3>
                             </div>
                             <div class="panel-body" >
-                               @form(routes.Application.save()) {	
+                               @form(routes.Application.save(),'id ->"registrationForm") {	
 					          <fieldset>@formElements(knolxForm)</fieldset>
                                   
                                    <div class="actions">
@@ -39,4 +39,44 @@
          </div>
     </div>
  </div>
+ <script>
+  $("#registrationForm").validate({
+	  rules: {
+		name: "required", 
+		address:"required",
+		company :"required",
+		 email: {
+		      required: true,
+		      email: true
+		    },
+	    password: "required",
+	    phone: {
+	        required: true,
+	        number: true
+	      },
+	      user_type: {
+		        required: true,
+		        number: true
+		      }
+	  },
+	  messages: {
+		  name: "Please enter your name",
+		  address: "Please enter your address",
+		  company: "please enter your company name",
+		  email: {
+		      required: "We need your email address to contact you",
+		      email: "Your email address must be in the format of namedomain.com"
+		    },
+	     password: "Please enter your password ",
+	     phone: {
+		      required: "please enter your phone number",
+		      number: "given phone number is not numeric"
+		    },
+		    user_type: {
+			      required: "please enter your user type ",
+			      number: "given user type is not numeric"
+		    }
+	  }
+	});
+	</script>
 }

@@ -20,6 +20,7 @@ object Application extends Controller {
    *
    * @param   All credentials of KnolxUser case class.
    */
+  var userName ="no user"
   val registrationForm = Form(
     mapping(
       "id" -> ignored(Some(0): Option[Int]),
@@ -28,7 +29,7 @@ object Application extends Controller {
       "company" -> nonEmptyText,
       "email" -> email,
       "password" -> nonEmptyText,
-      "phone" -> nonEmptyText,
+      "phone" -> longNumber,
       "user_type" -> number,
       "created" -> ignored(new Date),
       "updated" -> ignored(new Date))(KnolxUser.apply)(KnolxUser.unapply))
@@ -65,7 +66,7 @@ object Application extends Controller {
    * @return      http Response Ok.
    */
 
-  def login = Action {
+  def login = Action {implicit request=>
     Ok(views.html.loginForm(loginForm))
   }
 
@@ -94,10 +95,10 @@ object Application extends Controller {
     loginForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.loginForm(formWithErrors)),
       knolxuser => {
-        val result = KnolxUserObject.loginFormVaildation(knolxuser)
-        if (result > 0) {
+         userName = KnolxUserObject.loginFormVaildation(knolxuser)
+        if (userName!="no user") {
           val msg = s"KnolxUser  ${knolxuser.email} has been logined"
-          Ok(views.html.userHome("Logout", result)).withSession(knolxuser.password -> knolxuser.email)
+          Ok(views.html.userHome("Logout",userName)).withSession("email" -> knolxuser.email).flashing("success" -> "Hello this is a flash message!")
         } else {
           val msg = s"KnolxUser  ${knolxuser.email} has been not logined"
           Ok(msg)
@@ -110,8 +111,8 @@ object Application extends Controller {
    * @return      http Response Ok.
    */
 
-  def userHome(loginStatus: String, knolxId: Int) = Action {
-    Ok(views.html.userHome("Logout", knolxId))
+  def userHome(loginStatus: String) = Action {implicit request =>
+    Ok(views.html.userHome("Logout",userName)).flashing("success"->"Hello this is a flash message!")
   }
 
   /**
@@ -128,9 +129,9 @@ object Application extends Controller {
    *              otherwise fill the registrationForm.
    */
 
-  def edit(id: Int) = DBAction { implicit request =>
-    KnolxUserObject.editKnolById(id) match {
-      case Some(knolxUser) => Ok(views.html.editForm(id, registrationForm.fill(knolxUser)))
+  def edit() = DBAction { implicit request =>
+    KnolxUserObject.getKnolByEmail(request.session.get("email").get) match {
+      case Some(knolxUser) => Ok(views.html.editForm(registrationForm.fill(knolxUser),userName))
       case None            => NotFound
     }
   }
@@ -141,13 +142,14 @@ object Application extends Controller {
    *              otherwise  update the credentials .
    */
 
-  def update(id: Int) = DBAction { implicit request =>
+  def update() = DBAction { implicit request =>
     registrationForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.editForm(id, formWithErrors)),
+      formWithErrors => BadRequest(views.html.editForm(formWithErrors,userName)),
       user => {
-        val KnolxUserToUpdate: KnolxUser = user.copy(Some(id))
-        KnolxUserObject.updateKnolById(id, KnolxUserToUpdate)
-        Ok(views.html.userHome("Logout")).flashing("success" -> s"KnoxUser  ${user.name} has been updated")
+        val knol = KnolxUserObject.getKnolByEmail(request.session.get("email").get).get
+        val KnolxUserToUpdate: KnolxUser = user.copy(knol.id, created = knol.created)
+        KnolxUserObject.updateKnolById(request.session.get("email").get, KnolxUserToUpdate)
+        Ok(views.html.userHome("Logout",userName))
       })
   }
 
